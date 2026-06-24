@@ -1,0 +1,64 @@
+{
+    "name": "@signalsafe/tree-spec-editor-core",
+    "version": "0.1.3",
+    "type": "module",
+    "description": "Framework-agnostic TreeSpec editor model, helpers, and constants (no UI, no React, no DOM).",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/SignalSafeSoftware/tree-spec-editor-core.git"
+    },
+    "bugs": {
+        "url": "https://github.com/SignalSafeSoftware/tree-spec-editor-core/issues"
+    },
+    "homepage": "https://github.com/SignalSafeSoftware/tree-spec-editor-core#readme",
+    "keywords": [
+        "tree-spec",
+        "tree-spec-editor",
+        "decision-tree",
+        "graph-editor",
+        "dagre",
+        "headless",
+        "typescript",
+        "signalsafe"
+    ],
+    "sideEffects": false,
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "default": "./dist/index.js"
+        }
+    },
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE"
+    ],
+    "engines": {
+        "node": ">=18"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "scripts": {
+        "build": "tsc -p tsconfig.build.json",
+        "typecheck": "tsc --noEmit",
+        "pack:local": "npm pack --pack-destination ../../dist/reusable-npm",
+        "prepublishOnly": "npm run build",
+        "prepare": "npm run build",
+        "test": "vitest run",
+        "test:monorepo": "cd ../../frontend && yarn vitest run --config vitest.tree-spec-editor-core.config.ts"
+    },
+    "dependencies": {
+        "@signalsafe/tree-spec": "^0.3.1",
+        "dagre": "^0.8.5"
+    },
+    "devDependencies": {
+        "@types/dagre": "^0.7.52",
+        "typescript": "^5.4.2",
+        "vitest": "^3.2.4"
+    }
+}
