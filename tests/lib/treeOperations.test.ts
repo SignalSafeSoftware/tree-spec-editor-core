@@ -63,7 +63,7 @@ describe('duplicateNode', () => {
         expect(clone.prompt).toBe(original.prompt);
         expect(clone.position).toEqual({ x: 50, y: 60 });
 
-        expect(clone.choices.length).toBe(original.choices.length);
+        expect(clone.choices).toHaveLength(original.choices.length);
         const originalChoiceIds = new Set(original.choices.map((c) => c.id));
         for (const choice of clone.choices) {
             expect(choice.id.startsWith('c_')).toBe(true);
@@ -264,7 +264,7 @@ describe('applyTreeTemplate', () => {
         const insertedIds = Object.keys(result.nextTree.nodes).filter(
             (id) => !tree.nodes[id],
         );
-        expect(insertedIds.length).toBe(2);
+        expect(insertedIds).toHaveLength(2);
         expect(insertedIds).toContain(result.focusNodeId);
         for (const id of insertedIds) {
             expect(id.startsWith('n_')).toBe(true);
@@ -291,7 +291,7 @@ describe('applyTreeTemplate', () => {
         const focusTransitions = nextTree.transitions.filter(
             (t) => t.fromNodeId === focusNodeId,
         );
-        expect(focusTransitions.length).toBe(2);
+        expect(focusTransitions).toHaveLength(2);
         const verifyEdge = focusTransitions.find((t) => t.fromChoiceId === 'verify');
         expect(verifyEdge?.toNodeId).toBe(verifyNodeId);
         const complyEdge = focusTransitions.find((t) => t.fromChoiceId === 'comply');
@@ -386,9 +386,9 @@ describe('applyTreeTemplate', () => {
         };
         const { nextTree, focusNodeId } = applyTreeTemplate(tree, spec);
         expect(focusNodeId).toBeDefined();
-        expect(Object.keys(nextTree.nodes).length).toBe(Object.keys(tree.nodes).length + 1);
+        expect(Object.keys(nextTree.nodes)).toHaveLength(Object.keys(tree.nodes).length + 1);
         const edges = nextTree.transitions.filter((t) => t.fromNodeId === focusNodeId);
-        expect(edges.length).toBe(2);
+        expect(edges).toHaveLength(2);
         expect(edges.every((e) => e.toNodeId === END_NODE_ID)).toBe(true);
     });
 });
