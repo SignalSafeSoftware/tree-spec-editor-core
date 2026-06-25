@@ -14,7 +14,7 @@ export function createEditorHistoryStack(): EditorHistoryStack {
 
 /** Deep-clone an editor tree for history snapshots. */
 export function cloneEditorTree(tree: EditorTree): EditorTree {
-    return JSON.parse(JSON.stringify(tree)) as EditorTree;
+    return structuredClone(tree);
 }
 
 export function editorTreesEqual(a: EditorTree, b: EditorTree): boolean {

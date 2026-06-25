@@ -121,28 +121,40 @@ function nudgeCollisionPair(aNode: EditorNode, bNode: EditorNode): boolean {
     return true;
 }
 
+function nudgeNodePairCollisions(
+    nodes: Record<string, EditorNode>,
+    aId: string,
+    bId: string,
+): boolean {
+    const aNode = nodes[aId];
+    const bNode = nodes[bId];
+    if (!aNode || !bNode) return false;
+    return nudgeCollisionPair(aNode, bNode);
+}
+
+function scanCollisionPass(nodes: Record<string, EditorNode>, ids: string[]): boolean {
+    let changed = false;
+    for (let i = 0; i < ids.length; i += 1) {
+        for (let j = i + 1; j < ids.length; j += 1) {
+            const aId = ids[i];
+            const bId = ids[j];
+            if (!aId || !bId) continue;
+            if (nudgeNodePairCollisions(nodes, aId, bId)) {
+                changed = true;
+            }
+        }
+    }
+    return changed;
+}
+
 function nudgeCollisions(nodes: Record<string, EditorNode>): void {
     const ids = Object.keys(nodes);
     let changed = true;
     let guard = 0;
 
     while (changed && guard < 100) {
-        changed = false;
+        changed = scanCollisionPass(nodes, ids);
         guard += 1;
-
-        for (let i = 0; i < ids.length; i += 1) {
-            for (let j = i + 1; j < ids.length; j += 1) {
-                const aId = ids[i];
-                const bId = ids[j];
-                if (!aId || !bId) continue;
-                const aNode = nodes[aId];
-                const bNode = nodes[bId];
-                if (!aNode || !bNode) continue;
-                if (nudgeCollisionPair(aNode, bNode)) {
-                    changed = true;
-                }
-            }
-        }
     }
 }
 

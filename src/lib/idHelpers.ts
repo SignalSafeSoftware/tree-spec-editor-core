@@ -1,7 +1,7 @@
 import { safeUUID } from '@signalsafe/tree-spec';
 
 function randomHex(length: number): string {
-    return safeUUID().replace(/-/g, '').slice(0, length);
+    return safeUUID().replaceAll('-', '').slice(0, length);
 }
 
 /** Fresh editor node id (`n_` + 8 hex chars). */
