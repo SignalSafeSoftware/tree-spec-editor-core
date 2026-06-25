@@ -149,8 +149,10 @@ export function lintEditorTree(t: EditorTree): TreeSpecIssue[] {
     );
 
     const reachable = collectReachableNodes(t, transMap);
-    issues.push(...lintUnreachableNodes(t, reachable));
-    issues.push(...lintPathsMustReachEnd(t, reachable, transMap));
+    issues.push(
+        ...lintUnreachableNodes(t, reachable),
+        ...lintPathsMustReachEnd(t, reachable, transMap),
+    );
 
     for (const tr of t.transitions) {
         if (tr.toNodeId === END_NODE_ID && !tr.outcome) {
