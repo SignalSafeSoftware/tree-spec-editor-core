@@ -1,26 +1,154 @@
 name: CI
 
 on:
-  push:
-    branches: [main, master]
-  pull_request:
+    workflow_dispatch:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main, develop]
+        types: [opened, synchronize, reopened, labeled, unlabeled]
+
+concurrency:
+    group: ci-${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+env:
+    NODE_VERSION: "24"
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+    checks:
+        name: Checks
+        if: |
+            github.event_name == 'workflow_dispatch' ||
+            github.event_name == 'push' ||
+            (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'checks'))
+        runs-on: ubuntu-latest
+        container: node:24-alpine
+        steps:
+            - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
 
-      - run: npm ci
+            - name: Enable Yarn
+              run: corepack enable
 
-      - run: npm run typecheck
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
 
-      - run: npm test
+            - name: Typecheck
+              run: yarn typecheck
 
-      - run: npm run build
+    tests:
+        name: Tests
+        if: |
+            github.event_name == 'workflow_dispatch' ||
+            github.event_name == 'push' ||
+            (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'tests'))
+        runs-on: ubuntu-latest
+        container: node:24-alpine
+        steps:
+            - uses: actions/checkout@v4
 
-      - run: npm publish --dry-run
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+
+            - name: Enable Yarn
+              run: corepack enable
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+
+            - name: Unit tests with coverage
+              run: yarn test --coverage
+
+            - name: Upload coverage
+              uses: actions/upload-artifact@v4
+              with:
+                  name: coverage
+                  path: coverage/lcov.info
+                  if-no-files-found: error
+
+    scan:
+        name: Scan
+        needs: [tests]
+        if: |
+            github.event_name == 'workflow_dispatch' ||
+            github.event_name == 'push' ||
+            (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'scan'))
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            pull-requests: write
+        env:
+            SONAR_TOKEN: ${{ secrets.PACKAGES_SONAR_TOKEN }}
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+
+            - name: Enable Yarn
+              run: corepack enable
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+
+            - name: Unit tests with coverage
+              run: yarn test --coverage
+
+            - name: Verify coverage report
+              run: |
+                  test -f coverage/lcov.info
+                  grep '^SF:src/' coverage/lcov.info
+
+            - name: SonarCloud scan
+              uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995
+
+            - name: Sonar PR comment
+              if: github.event_name == 'pull_request'
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const body = `SonarCloud analysis for \`@signalsafe/tree-spec-editor-core\` (\`signalsafe-package-tree-spec-editor-core\`) completed with result \`${{ job.status }}\`.`;
+                      await github.rest.issues.createComment({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          issue_number: context.issue.number,
+                          body,
+                      });
+
+    publish:
+        name: Publish
+        needs: [checks, tests, scan]
+        if: |
+            (
+              github.event_name == 'workflow_dispatch' ||
+              (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'publish'))
+            ) &&
+            (needs.checks.result == 'success' && needs.tests.result == 'success' && needs.scan.result == 'success')
+        runs-on: ubuntu-latest
+        container: node:24-alpine
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+
+            - name: Enable Yarn
+              run: corepack enable
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+
+            - name: Build
+              run: yarn build
+
+            - name: Publish to npm
+              run: yarn publish --access public --non-interactive
