@@ -48,6 +48,7 @@
         "build": "tsc -p tsconfig.build.json",
         "typecheck": "tsc --noEmit",
         "pack:local": "npm pack --pack-destination ../../dist/reusable-npm",
+        "smoke:package": "node scripts/smoke-package.mjs",
         "prepublishOnly": "npm run build",
         "prepare": "npm run build",
         "test": "vitest run",
