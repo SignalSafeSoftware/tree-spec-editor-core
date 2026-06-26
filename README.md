@@ -75,7 +75,7 @@ Import from `@signalsafe/tree-spec-editor-core` only (no subpath exports).
 | Tree ops | `duplicateNode`, `deleteNode`, `computeTreeDiffSummary`, `applyTreeTemplate`, `getTransition`, `upsertTransition`, `deleteTransitionsForChoice` |
 | Layout | `autoLayoutTree`, `getNextSpawnPosition` |
 | Lint / wire | `lintEditorTree`, `lintEditorAppearance`, `coerceTreeSpecWireForEditor`, `parsePydanticOutcomeErrors` |
-| History | `pushEditorHistory`, `undoEditorHistory`, `redoEditorHistory`, `createEditorHistoryStack` |
+| History | `pushEditorHistory`, `popEditorUndo`, `popEditorRedo`, `createEditorHistoryStack` |
 | Keyboard / autosave | `getKeyboardShortcutAction`, `getAutosaveStatusLabel`, `shouldQueueInitialValidation` |
 | Re-exported wire types | `TreeSpecWire`, `TreeSpecIssue`, `readGraphEditorMeta`, `writeGraphEditorMeta`, … |
 
