@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-06-26
+
+### Fixed
+
+- Clear monorepo `paths` from standalone `tsconfig.build.json` so local `yarn build` works outside the monorepo.
+
+### Changed
+
+- Standardize development on Yarn 1.22.22 (`packageManager`, README dev commands).
+- Bump `@signalsafe/tree-spec` dependency to `^0.3.2`.
+
 ## [0.1.2] - 2026-06-26
 
 ### Added
@@ -22,5 +33,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Checks and tests on every PR; Sonar **`scan`** is label-gated on PRs and runs on tag push and manual dispatch (Batch 1).
 - Publish only from manual **`main`** dispatch or **`v*`** tags (not PR labels); publish requires **`checks`**, **`tests`**, and **`scan`**.
 
-[Unreleased]: https://github.com/SignalSafeSoftware/tree-spec-editor-core/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/SignalSafeSoftware/tree-spec-editor-core/compare/v0.1.3...HEAD
+[0.1.3]: https://github.com/SignalSafeSoftware/tree-spec-editor-core/releases/tag/v0.1.3
 [0.1.2]: https://github.com/SignalSafeSoftware/tree-spec-editor-core/releases/tag/v0.1.2
