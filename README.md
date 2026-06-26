@@ -105,6 +105,11 @@ npm run typecheck
 
 See [SECURITY.md](./SECURITY.md). This package manipulates **authoring data in memory**. Host applications must enforce authorization, validate content server-side, and control who may publish scenarios.
 
+## Changelog and releases
+
+- [CHANGELOG.md](./CHANGELOG.md)
+- [RELEASING.md](./RELEASING.md)
+
 ## Related reading
 
 - [`@signalsafe/tree-spec`](https://github.com/SignalSafeSoftware/tree-spec) — wire format and graph-editor metadata namespaces.
