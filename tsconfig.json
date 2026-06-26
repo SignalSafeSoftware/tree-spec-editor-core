@@ -12,7 +12,12 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noImplicitReturns": true,
-        "noFallthroughCasesInSwitch": true
+        "noFallthroughCasesInSwitch": true,
+        "baseUrl": ".",
+        "paths": {
+            "@signalsafe/tree-spec": ["../tree-spec/src/index.ts"],
+            "@signalsafe/tree-spec/*": ["../tree-spec/src/*"]
+        }
     },
     "include": ["src/**/*.ts"],
     "exclude": ["tests/**", "node_modules", "dist"]
