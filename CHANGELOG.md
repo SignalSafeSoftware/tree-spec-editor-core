@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Tests: expanded dispatch, transition, and package-boundary coverage.
 
+### Changed
+
+- Raise minimum supported Node.js to **>=20.19.0** (`engines.node`); CI matrix tests **20.19**, **22**, and **24** (Node 18 dropped).
+
 ## [0.1.3] - 2026-06-26
 
 ### Fixed

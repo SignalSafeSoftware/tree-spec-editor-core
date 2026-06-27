@@ -2,6 +2,10 @@
 
 Standalone repository: [SignalSafeSoftware/tree-spec-editor-core](https://github.com/SignalSafeSoftware/tree-spec-editor-core).
 
+## Requirements
+
+- Node.js **>=20.19.0** for local development, CI, and publish smoke (see `package.json` `engines`).
+
 **Depends on:** `@signalsafe/tree-spec`.
 
 ## CI publish policy

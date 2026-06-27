@@ -27,7 +27,7 @@ Framework-agnostic core for the SignalSafe **TreeSpec graph editor**: editor mod
 npm install @signalsafe/tree-spec-editor-core @signalsafe/tree-spec
 ```
 
-Peer/runtime: Node.js 18+ (see `package.json` `engines`).
+Peer/runtime: Node.js 20.19+ (see `package.json` `engines`).
 
 ## Quick start
 
@@ -92,7 +92,7 @@ See `src/index.ts` for the full barrel.
 
 ## Development
 
-Requires Node.js **>=18** (`engines.node`). CI runs checks, tests, and smoke across Node **18**, **20**, **22**, and **24**; publish uses Node **24**.
+Requires Node.js **>=20.19.0** (`engines.node`). CI runs checks, tests, and smoke across Node **20.19**, **22**, and **24**; publish uses Node **24**.
 
 From this repository:
 
