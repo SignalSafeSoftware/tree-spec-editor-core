@@ -57,7 +57,7 @@
         "test:monorepo": "cd ../../frontend && yarn vitest run --config vitest.tree-spec-editor-core.config.ts"
     },
     "dependencies": {
-        "@signalsafe/tree-spec": "^0.3.2",
+        "@signalsafe/tree-spec": "^0.3.3",
         "dagre": "^0.8.5"
     },
     "devDependencies": {
