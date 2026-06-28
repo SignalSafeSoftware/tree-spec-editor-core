@@ -46,12 +46,14 @@
     },
     "scripts": {
         "build": "tsc -p tsconfig.build.json",
+        "lint": "yarn typecheck",
         "typecheck": "tsc --noEmit",
         "pack:local": "npm pack --pack-destination ../../dist/reusable-npm",
         "smoke:package": "node scripts/smoke-package.mjs",
         "prepublishOnly": "npm run build",
         "prepare": "npm run build",
         "test": "vitest run",
+        "test:coverage": "yarn test --coverage",
         "test:monorepo": "cd ../../frontend && yarn vitest run --config vitest.tree-spec-editor-core.config.ts"
     },
     "dependencies": {
