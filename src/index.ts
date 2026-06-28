@@ -12,7 +12,7 @@
  *           autosave status, keyboard shortcuts, stable-key helpers)
  */
 
-export { END_NODE_ID, GRAPH_SELECTION_KIND } from './model';
+export { END_NODE_ID, GRAPH_SELECTION_KIND } from './model.js';
 export type {
     EditorChoice,
     EditorNode,
@@ -25,21 +25,21 @@ export type {
     ReactFlowNodeChange,
     TreeSpecAuditEventItem,
     TreeSpecSnapshotItem,
-} from './model';
+} from './model.js';
 
 export {
     applyEditorConnect,
     applyEditorReconnect,
     choiceIdFromHandle,
     isValidEditorConnection,
-} from './lib/connectionValidation';
-export type { EditorConnection } from './lib/connectionValidation';
+} from './lib/connectionValidation.js';
+export type { EditorConnection } from './lib/connectionValidation.js';
 
 export {
     appendChoiceTemplate,
     applyEditorConnectOnDrop,
-} from './lib/choiceTemplates';
-export type { AppendChoiceTemplateInput, ConnectOnDropOptions } from './lib/choiceTemplates';
+} from './lib/choiceTemplates.js';
+export type { AppendChoiceTemplateInput, ConnectOnDropOptions } from './lib/choiceTemplates.js';
 
 export {
     safeUUID,
@@ -53,10 +53,10 @@ export {
     parsePydanticOutcomeErrors,
     shouldQueueInitialValidation,
     TREE_SPEC_NODE_TYPE_PRESETS,
-} from './lib/editorHelpers';
-export type { MoveNodeChoiceDirection, TreeSpecNodeTypePreset } from './lib/editorHelpers';
+} from './lib/editorHelpers.js';
+export type { MoveNodeChoiceDirection, TreeSpecNodeTypePreset } from './lib/editorHelpers.js';
 
-export { lintEditorAppearance } from './lib/lintEditorAppearance';
+export { lintEditorAppearance } from './lib/lintEditorAppearance.js';
 
 export {
     DEFAULT_CANVAS_EDGE_STROKE,
@@ -69,8 +69,8 @@ export {
     resolveEdgeStrokeColor,
     resolveEdgeStrokeColorForDisplay,
     shouldShowEdgeLabel,
-} from './lib/choiceEdgeHints';
-export type { ChoiceEdgeHints } from './lib/choiceEdgeHints';
+} from './lib/choiceEdgeHints.js';
+export type { ChoiceEdgeHints } from './lib/choiceEdgeHints.js';
 
 export {
     autoLayoutTree,
@@ -81,7 +81,7 @@ export {
     needsInitialLayout,
     snapPosition,
     snapToGrid,
-} from './lib/treeLayout';
+} from './lib/treeLayout.js';
 
 export {
     getThemeHints,
@@ -97,11 +97,11 @@ export {
     resolveCanvasNodeWidth,
     resolveNodeTextWrap,
     nodeTextWrapClassName,
-} from './lib/nodeHints';
-export type { NodeEditorHints, GraphPosition, NodeTextWrap } from './lib/nodeHints';
+} from './lib/nodeHints.js';
+export type { NodeEditorHints, GraphPosition, NodeTextWrap } from './lib/nodeHints.js';
 
-export { getAutosaveStatusLabel, AUTOSAVE_STATUS } from './lib/autosave';
-export type { AutosaveStatus } from './lib/autosave';
+export { getAutosaveStatusLabel, AUTOSAVE_STATUS } from './lib/autosave.js';
+export type { AutosaveStatus } from './lib/autosave.js';
 
 export {
     LEGACY_DEFAULT_END_POSITION,
@@ -109,16 +109,16 @@ export {
     resolveEndNodePosition,
     resolveGraphViewport,
     patchGraphEditorMeta,
-} from './lib/graphEditorLayout';
+} from './lib/graphEditorLayout.js';
 export type { GraphEditorViewport } from '@signalsafe/tree-spec';
 export { readGraphEditorMeta, writeGraphEditorMeta, GRAPH_EDITOR_META_NS } from '@signalsafe/tree-spec';
 export type { GraphEditorMeta } from '@signalsafe/tree-spec';
 
-export { getKeyboardShortcutAction, KEYBOARD_SHORTCUT_ACTION } from './lib/keyboardShortcuts';
+export { getKeyboardShortcutAction, KEYBOARD_SHORTCUT_ACTION } from './lib/keyboardShortcuts.js';
 export type {
     KeyboardShortcutAction,
     KeyboardShortcutParams,
-} from './lib/keyboardShortcuts';
+} from './lib/keyboardShortcuts.js';
 
 export {
     MAX_EDITOR_HISTORY,
@@ -131,28 +131,28 @@ export {
     popEditorRedo,
     popEditorUndo,
     pushEditorHistory,
-} from './lib/editorHistory';
-export type { EditorHistoryStack } from './lib/editorHistory';
+} from './lib/editorHistory.js';
+export type { EditorHistoryStack } from './lib/editorHistory.js';
 
 export {
     applyTreeTemplate,
     computeTreeDiffSummary,
     deleteNode,
     duplicateNode,
-} from './lib/treeOperations';
+} from './lib/treeOperations.js';
 export type {
     ApplyTreeTemplateOptions,
     TreeDiffSummary,
     TreeTemplateNodeSpec,
     TreeTemplateSpec,
     TreeTemplateTransitionSpec,
-} from './lib/treeOperations';
+} from './lib/treeOperations.js';
 
-export { buildStableEntries } from './lib/panelHelpers';
+export { buildStableEntries } from './lib/panelHelpers.js';
 
-export { resolveGraphSelectionFocus } from './lib/selectionFocus';
-export type { GraphSelectionFocus } from './lib/selectionFocus';
+export { resolveGraphSelectionFocus } from './lib/selectionFocus.js';
+export type { GraphSelectionFocus } from './lib/selectionFocus.js';
 
-export { coerceTreeSpecWireForEditor } from './lib/coerceTreeSpecWire';
+export { coerceTreeSpecWireForEditor } from './lib/coerceTreeSpecWire.js';
 
 export type { TreeSpecIssue, TreeSpecWire, GraphEditorEdgeType } from '@signalsafe/tree-spec';

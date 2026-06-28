@@ -1,4 +1,4 @@
-import type { EditorTree } from '../model';
+import type { EditorTree } from '../model.js';
 
 /** Maximum undo steps retained in memory. */
 export const MAX_EDITOR_HISTORY = 50;
