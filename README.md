@@ -1,76 +1,120 @@
 # @signalsafe/tree-spec-editor-core
 
-Framework-agnostic core for the SignalSafe TreeSpec graph editor. Provides the
-editor model, structural helpers, and shared constants used by the React
-implementation (`@signalsafe/tree-spec-editor`) and any future Angular / Vue /
-Solid implementations.
+Framework-agnostic core for the SignalSafe **TreeSpec graph editor**: editor model types, pure tree operations, layout, validation, and keyboard/autosave helpers.
 
-This package has **no UI dependencies**: no React, no DOM, no `react-bootstrap`,
-no `reactflow`. It is safe to import from Node scripts, server-side code, or any
-strict TypeScript project.
+| | |
+|---|---|
+| **npm** | `@signalsafe/tree-spec-editor-core` |
+| **GitHub** | [SignalSafeSoftware/tree-spec-editor-core](https://github.com/SignalSafeSoftware/tree-spec-editor-core) |
+| **Depends on** | `@signalsafe/tree-spec`, `dagre` |
 
-## What this package owns
+## What this package does
 
-- **Editor model types** — `EditorTree`, `EditorNode`, `EditorTransition`,
-  `EditorChoice`, `GraphSelection`, `GraphSelectionKind`,
-  `GraphEditorIssue`, `TreeSpecSnapshotItem`, `TreeSpecAuditEventItem`.
-- **Pure tree operations** — `duplicateNode`, `deleteNode`,
-  `computeTreeDiffSummary`, `applyTreeTemplate` (and the
-  `TreeTemplateSpec` / `TreeTemplateNodeSpec` / `TreeTemplateTransitionSpec`
-  / `ApplyTreeTemplateOptions` / `TreeDiffSummary` types).
-- **Transition helpers** — `getTransition`, `upsertTransition`,
-  `deleteTransitionsForChoice`, `lintEditorTree`,
-  `parsePydanticOutcomeErrors`, `safeUUID`.
-- **Layout helpers** — `autoLayoutTree`, `getNextSpawnPosition`.
-- **Lifecycle helpers** — `getAutosaveStatusLabel`,
-  `getKeyboardShortcutAction`, `shouldQueueInitialValidation`.
-- **Choice edge hints** — `getChoiceEdgeHints`, `patchChoiceEdgeHints`,
-  `resolveDefaultEdgeType`, `resolveEffectiveEdgeType`,
-  `resolveEdgeStrokeColor`, `resolveEdgeStrokeColorForDisplay`,
-  `DEFAULT_CANVAS_EDGE_STROKE`, `DEFAULT_EDGE_TYPE`,
-  `EDITOR_EDGE_TYPE_OPTIONS`, `shouldShowEdgeLabel`.
-  Use **`resolveEdgeStrokeColorForDisplay`** in appearance fields so an unset
-  stroke previews as **`DEFAULT_CANVAS_EDGE_STROKE`** (React Flow gray), not a
-  host theme color.
-- **Constants** — `AUTOSAVE_STATUS`, `KEYBOARD_SHORTCUT_ACTION`,
-  `GRAPH_SELECTION_KIND`, `TREE_SPEC_NODE_TYPE_PRESETS`, `END_NODE_ID`,
-  `buildStableEntries`.
-- **Connection validation** — `isValidEditorConnection`, `applyEditorConnect`,
-  `applyEditorReconnect`, `applyEditorConnectOnDrop`, `choiceIdFromHandle`.
-- **Editor history** — `pushEditorHistory`, `canUndoEditorHistory`,
-  `canRedoEditorHistory`, `undoEditorHistory`, `redoEditorHistory`,
-  `createEditorHistoryStack`.
-- **Choice templates** — `appendChoiceTemplate` (pair with shell
-  `ChoiceTemplatesPanel` for custom host layouts).
-- **Wire coercion** — `coerceTreeSpecWireForEditor`.
-- **Appearance lint** — `lintEditorAppearance` (included in `lintEditorTree`).
-- **Layout** — dagre-based `autoLayoutTree` with 20px snap grid (`LAYOUT_SNAP_GRID`).
-- **Node / graph meta hints** — `getThemeHints` (legacy `render_hints.theme`), `getEditorHints`, `patchEditorHints`, `editorHintsToStyle`, `readGraphEditorMeta`, `writeDefaultEdgeType`, etc.
+- Defines the **editor model** (`EditorTree`, `EditorNode`, `EditorTransition`, selection types).
+- Provides **pure functions** for tree edits: duplicate/delete nodes, transitions, layout, lint, undo/redo stacks, choice templates.
+- Coerces and validates wire JSON for editor use (`coerceTreeSpecWireForEditor`, `lintEditorTree`).
+- Reads/writes graph-editor metadata namespaces from `@signalsafe/tree-spec`.
 
-## What lives in framework packages instead
+## What this package does not do
 
-| Concern | Package |
-|--------|---------|
-| React Flow canvas (headless React, no UI library) | `@signalsafe/tree-spec-editor-react` |
-| React + Bootstrap panels, modals, toolbar | `@signalsafe/tree-spec-editor` |
-| React + Material UI shell (planned) | `@signalsafe/tree-spec-editor-react-mui` |
-| Angular shell + canvas (planned) | `@signalsafe/tree-spec-editor-angular` |
-| Vue shell + canvas (planned) | `@signalsafe/tree-spec-editor-vue` |
+- **No React, DOM, React Flow, or Bootstrap** — safe for Node scripts and non-React hosts.
+- **No HTTP, auth, persistence, or routing** — host apps load/save drafts and enforce permissions.
+- **No canvas rendering** — use `@signalsafe/tree-spec-editor-react` or a custom canvas.
 
-See [docs/ai/packages-editor-architecture.md](../../docs/ai/packages-editor-architecture.md) for layer rules and what each future package may import.
+## Install
 
-## Refactoring / simplification
+```bash
+npm install @signalsafe/tree-spec-editor-core @signalsafe/tree-spec
+```
 
-Internal file splits and type hardening are described in [docs/ai/packages-simplification-refactor-plan.md](../../docs/ai/packages-simplification-refactor-plan.md). Refactors must **not** move React, DOM, or reactflow code into this package.
+Peer/runtime: Node.js 22.12+ (see `package.json` `engines`).
 
-## Versioning
+## Quick start
 
-Bumped on every additive change. Breaking changes are documented in the
-monorepo [MIGRATIONS.md](../MIGRATIONS.md) with a paired entry in
-[CHANGELOG.md](../CHANGELOG.md).
+```ts
+import {
+    END_NODE_ID,
+    lintEditorTree,
+    autoLayoutTree,
+    type EditorTree,
+} from "@signalsafe/tree-spec-editor-core";
 
-## Repository
+const tree: EditorTree = autoLayoutTree({
+    start_node: "start",
+    nodes: {
+        start: {
+            id: "start",
+            type: "prompt",
+            prompt: "Choose a response",
+            choices: [{ id: "go", label: "Continue" }],
+            position: { x: 0, y: 0 },
+        },
+    },
+    transitions: [
+        {
+            id: "t1",
+            fromNodeId: "start",
+            fromChoiceId: "go",
+            toNodeId: END_NODE_ID,
+            outcome: "safe",
+        },
+    ],
+});
 
-Standalone source and releases: [SignalSafeSoftware/tree-spec-editor-core](https://github.com/SignalSafeSoftware/tree-spec-editor-core).
+const issues = lintEditorTree(tree);
+console.log(issues); // []
+```
 
-Published as [`@signalsafe/tree-spec-editor-core`](https://www.npmjs.com/package/@signalsafe/tree-spec-editor-core) on npm.
+## Public exports (main entry)
+
+Import from `@signalsafe/tree-spec-editor-core` only (no subpath exports).
+
+| Area | Key exports |
+|---|---|
+| Model | `EditorTree`, `EditorNode`, `EditorTransition`, `EditorChoice`, `GraphSelection`, `GraphEditorIssue`, `END_NODE_ID`, `GRAPH_SELECTION_KIND` |
+| Tree ops | `duplicateNode`, `deleteNode`, `computeTreeDiffSummary`, `applyTreeTemplate`, `getTransition`, `upsertTransition`, `deleteTransitionsForChoice` |
+| Layout | `autoLayoutTree`, `getNextSpawnPosition` |
+| Lint / wire | `lintEditorTree`, `lintEditorAppearance`, `coerceTreeSpecWireForEditor`, `parsePydanticOutcomeErrors` |
+| History | `pushEditorHistory`, `popEditorUndo`, `popEditorRedo`, `createEditorHistoryStack` |
+| Keyboard / autosave | `getKeyboardShortcutAction`, `getAutosaveStatusLabel`, `shouldQueueInitialValidation` |
+| Re-exported wire types | `TreeSpecWire`, `TreeSpecIssue`, `readGraphEditorMeta`, `writeGraphEditorMeta`, … |
+
+See `src/index.ts` for the full barrel.
+
+## Package boundaries
+
+| Layer | Package |
+|---|---|
+| Wire contract | `@signalsafe/tree-spec` |
+| **Editor model & helpers (this package)** | `@signalsafe/tree-spec-editor-core` |
+| React Flow canvas | `@signalsafe/tree-spec-editor-react` |
+| Bootstrap UI shell | `@signalsafe/tree-spec-editor` |
+
+## Development
+
+Requires Node.js **>=22.12.0** (`engines.node`). CI runs checks, tests, and smoke on Node **22** and **24**; publish uses Node **24**. Node 20 is no longer supported (GitHub Actions Node 20 deprecation).
+
+From this repository:
+
+`yarn build` uses `tsconfig.build.json` and resolves `@signalsafe/*` from `node_modules`. Ecosystem sibling `paths` in `tsconfig.json` apply to local typecheck/tests only.
+
+```bash
+yarn install
+yarn build
+yarn test
+yarn typecheck
+```
+
+## Security
+
+See [SECURITY.md](./SECURITY.md). This package manipulates **authoring data in memory**. Host applications must enforce authorization, validate content server-side, and control who may publish scenarios.
+
+## Changelog and releases
+
+- [CHANGELOG.md](./CHANGELOG.md)
+- [RELEASING.md](./RELEASING.md)
+
+## Related reading
+
+- [`@signalsafe/tree-spec`](https://github.com/SignalSafeSoftware/tree-spec) — wire format and graph-editor metadata namespaces.
+- [`@signalsafe/tree-spec-editor-react`](https://github.com/SignalSafeSoftware/tree-spec-editor-react) — React canvas and `useTreeSpecEditor`.

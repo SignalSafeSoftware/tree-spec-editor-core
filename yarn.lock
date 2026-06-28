@@ -343,10 +343,10 @@
   resolved "https://registry.yarnpkg.com/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.62.2.tgz#3671ce3f9b928d5c01f879792d5c0b60ae14d4ad"
   integrity sha512-BfzEnDJOt9T8M989/lA37EcJgat01wLRnoi5dQf3QzOH7jzpqTAzdDbVfRljVr5r+jzKqpbHeyOfAaXxAd0PAA==
 
-"@signalsafe/tree-spec@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@signalsafe/tree-spec/-/tree-spec-0.3.1.tgz#0d4d1b21e68e7130fe67ba6cdfb4ebbb01fb7c65"
-  integrity sha512-23KUkmvnGDC/X+yl2M7s0o5Xpz2m98Qt/XQhbFo62epuiI1pngMZJeVnYoe0iyMnc6hr0rMf+YYHUzRBLfCqBQ==
+"@signalsafe/tree-spec@^0.3.3":
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/@signalsafe/tree-spec/-/tree-spec-0.3.3.tgz#a92a63f94680949382ac23cb22cf6d32cd560244"
+  integrity sha512-Z+jt/Asj0TuJtIXKSESPKXPRpVUMs5WRbwQagqUp7zh29KKvqOUcZ008EuY1q6fQtkdoARvXdJG9WRsCa1Ul4w==
 
 "@types/chai@^5.2.2":
   version "5.2.3"
