@@ -1,6 +1,6 @@
 {
     "name": "@signalsafe/tree-spec-editor-core",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "type": "module",
     "description": "Framework-agnostic TreeSpec editor model, helpers, and constants (no UI, no React, no DOM).",
     "license": "MIT",
