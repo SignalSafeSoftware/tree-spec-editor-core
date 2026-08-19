@@ -13,7 +13,6 @@
         "noUnusedParameters": true,
         "noImplicitReturns": true,
         "noFallthroughCasesInSwitch": true,
-        "baseUrl": ".",
         "paths": {
             "@signalsafe/tree-spec": ["../tree-spec/src/index.ts"],
             "@signalsafe/tree-spec/*": ["../tree-spec/src/*"]
