@@ -1,6 +1,6 @@
 {
     "name": "@signalsafe/tree-spec-editor-core",
-    "version": "0.1.5",
+    "version": "0.1.6",
     "type": "module",
     "description": "Framework-agnostic TreeSpec editor model, helpers, and constants (no UI, no React, no DOM).",
     "license": "MIT",
@@ -57,7 +57,7 @@
         "test:monorepo": "cd ../../frontend && yarn vitest run --config vitest.tree-spec-editor-core.config.ts"
     },
     "dependencies": {
-        "@signalsafe/tree-spec": "^0.3.3",
+        "@signalsafe/tree-spec": "^0.3.4",
         "dagre": "^0.8.5"
     },
     "devDependencies": {
