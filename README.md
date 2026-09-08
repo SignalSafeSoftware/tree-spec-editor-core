@@ -12,6 +12,7 @@ Framework-agnostic core for the SignalSafe **TreeSpec graph editor**: editor mod
 
 - Defines the **editor model** (`EditorTree`, `EditorNode`, `EditorTransition`, selection types).
 - Provides **pure functions** for tree edits: duplicate/delete nodes, transitions, layout, lint, undo/redo stacks, choice templates.
+- Provides pure three-way graph merging with explicit merged or conflict results (`mergeEditorTrees`).
 - Coerces and validates wire JSON for editor use (`coerceTreeSpecWireForEditor`, `lintEditorTree`).
 - Reads/writes graph-editor metadata namespaces from `@signalsafe/tree-spec`.
 
@@ -65,6 +66,26 @@ const issues = lintEditorTree(tree);
 console.log(issues); // []
 ```
 
+## Three-way graph merging
+
+`mergeEditorTrees(baseline, local, remote)` is a pure helper for revision-aware
+editor hosts. Non-overlapping field and keyed choice/transition edits merge
+deterministically. Overlapping edits, including deletion-versus-change and
+`null` values, return `{ kind: "conflict", conflicts }` with exact paths;
+successful merges return `{ kind: "merged", value }`. The host still owns
+revision tokens, transport, persistence, and conflict presentation.
+
+```ts
+import { mergeEditorTrees } from "@signalsafe/tree-spec-editor-core";
+
+const result = mergeEditorTrees(baseline, local, remote);
+if (result.kind === "conflict") {
+    console.log(result.conflicts.map((entry) => entry.path));
+} else {
+    await saveMergedTree(result.value);
+}
+```
+
 ## Public exports (main entry)
 
 Import from `@signalsafe/tree-spec-editor-core` only (no subpath exports).
@@ -73,6 +94,7 @@ Import from `@signalsafe/tree-spec-editor-core` only (no subpath exports).
 |---|---|
 | Model | `EditorTree`, `EditorNode`, `EditorTransition`, `EditorChoice`, `GraphSelection`, `GraphEditorIssue`, `END_NODE_ID`, `GRAPH_SELECTION_KIND` |
 | Tree ops | `duplicateNode`, `deleteNode`, `computeTreeDiffSummary`, `applyTreeTemplate`, `getTransition`, `upsertTransition`, `deleteTransitionsForChoice` |
+| Merge | `mergeEditorTrees`, `TreeMergeResult`, `TreeMergeConflict` |
 | Layout | `autoLayoutTree`, `getNextSpawnPosition` |
 | Lint / wire | `lintEditorTree`, `lintEditorAppearance`, `coerceTreeSpecWireForEditor`, `parsePydanticOutcomeErrors` |
 | History | `pushEditorHistory`, `popEditorUndo`, `popEditorRedo`, `createEditorHistoryStack` |

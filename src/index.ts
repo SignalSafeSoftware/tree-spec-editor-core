@@ -150,6 +150,9 @@ export type {
 
 export { buildStableEntries } from './lib/panelHelpers.js';
 
+export { mergeEditorTrees } from './lib/treeMerge.js';
+export type { TreeMergeConflict, TreeMergeResult } from './lib/treeMerge.js';
+
 export { resolveGraphSelectionFocus } from './lib/selectionFocus.js';
 export type { GraphSelectionFocus } from './lib/selectionFocus.js';
 

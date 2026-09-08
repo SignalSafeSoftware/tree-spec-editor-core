@@ -94,8 +94,12 @@ function nodeCanReachEnd(
     transMap: Map<string, string>,
     nodeId: string,
     visiting: Set<string>,
+    memo: Map<string, boolean>,
 ): boolean {
     if (nodeId === END_NODE_ID) return true;
+    const memoizedResult = memo.get(nodeId);
+    if (memoizedResult !== undefined) return memoizedResult;
+
     const node = tree.nodes[nodeId];
     if (!node) return false;
     if (visiting.has(nodeId)) return false;
@@ -104,30 +108,35 @@ function nodeCanReachEnd(
     const choices = node.choices ?? [];
     if (choices.length === 0) {
         visiting.delete(nodeId);
+        memo.set(nodeId, false);
         return false;
     }
 
+    let canReachEnd = true;
     for (const choice of choices) {
         const toNodeId = transMap.get(`${nodeId}::${choice.id}`);
         if (!toNodeId) {
             visiting.delete(nodeId);
-            return false;
+            canReachEnd = false;
+            break;
         }
         if (toNodeId === END_NODE_ID) continue;
-        if (!nodeCanReachEnd(tree, transMap, toNodeId, visiting)) {
-            visiting.delete(nodeId);
-            return false;
+        if (!nodeCanReachEnd(tree, transMap, toNodeId, visiting, memo)) {
+            canReachEnd = false;
+            break;
         }
     }
 
     visiting.delete(nodeId);
-    return true;
+    memo.set(nodeId, canReachEnd);
+    return canReachEnd;
 }
 
 function lintPathsMustReachEnd(tree: EditorTree, reachable: Set<string>, transMap: Map<string, string>): TreeSpecIssue[] {
     const issues: TreeSpecIssue[] = [];
+    const memo = new Map<string, boolean>();
     for (const nodeId of reachable) {
-        if (nodeCanReachEnd(tree, transMap, nodeId, new Set())) continue;
+        if (nodeCanReachEnd(tree, transMap, nodeId, new Set(), memo)) continue;
         issues.push({
             severity: 'error',
             message: `Node '${nodeId}' has paths that do not reach END.`,

@@ -4,7 +4,7 @@ runSmokePackage({
     runtimeChecks: [
         {
             subpath: '.',
-            exports: ['END_NODE_ID', 'lintEditorTree', 'autoLayoutTree'],
+        exports: ['END_NODE_ID', 'lintEditorTree', 'autoLayoutTree', 'mergeEditorTrees'],
         },
     ],
     typecheckSubpaths: ['.'],

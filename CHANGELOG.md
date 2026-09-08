@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+No unreleased changes recorded.
+
+## [0.2.0] - 2026-09-08
+
+### Added
+
+- Pure `mergeEditorTrees` three-way graph merging with explicit merged/conflict
+  results, stable collection ordering, and deletion/null/overlap diagnostics.
+
+### Fixed
+
+- Memoize editor graph terminal-path analysis so heavily converging graphs avoid
+  repeated traversal while preserving the all-paths-to-END result and cycle handling.
+
 ## [0.1.6] - 2026-08-28
 
 ### Changed
