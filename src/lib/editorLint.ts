@@ -89,54 +89,52 @@ function lintUnreachableNodes(tree: EditorTree, reachable: Set<string>): TreeSpe
         }));
 }
 
-function nodeCanReachEnd(
-    tree: EditorTree,
-    transMap: Map<string, string>,
-    nodeId: string,
-    visiting: Set<string>,
-    memo: Map<string, boolean>,
-): boolean {
-    if (nodeId === END_NODE_ID) return true;
-    const memoizedResult = memo.get(nodeId);
-    if (memoizedResult !== undefined) return memoizedResult;
+function collectNodesThatCanReachEnd(tree: EditorTree, transMap: Map<string, string>): Set<string> {
+    const reverse = new Map<string, Set<string>>();
+    const terminalSources = new Set<string>();
 
-    const node = tree.nodes[nodeId];
-    if (!node) return false;
-    if (visiting.has(nodeId)) return false;
-
-    visiting.add(nodeId);
-    const choices = node.choices ?? [];
-    if (choices.length === 0) {
-        visiting.delete(nodeId);
-        memo.set(nodeId, false);
-        return false;
+    for (const [key, toNodeId] of transMap.entries()) {
+        const [fromNodeId] = key.split('::');
+        if (toNodeId === END_NODE_ID) {
+            terminalSources.add(fromNodeId);
+            continue;
+        }
+        if (!tree.nodes[toNodeId]) continue;
+        const parents = reverse.get(toNodeId) ?? new Set<string>();
+        parents.add(fromNodeId);
+        reverse.set(toNodeId, parents);
     }
 
-    let canReachEnd = true;
-    for (const choice of choices) {
-        const toNodeId = transMap.get(`${nodeId}::${choice.id}`);
-        if (!toNodeId) {
-            visiting.delete(nodeId);
-            canReachEnd = false;
-            break;
-        }
-        if (toNodeId === END_NODE_ID) continue;
-        if (!nodeCanReachEnd(tree, transMap, toNodeId, visiting, memo)) {
-            canReachEnd = false;
-            break;
+    const canReachEnd = new Set(terminalSources);
+    const stack = [...terminalSources];
+    while (stack.length > 0) {
+        const nodeId = stack.pop();
+        if (!nodeId) continue;
+        for (const parent of reverse.get(nodeId) ?? []) {
+            if (canReachEnd.has(parent)) continue;
+            canReachEnd.add(parent);
+            stack.push(parent);
         }
     }
-
-    visiting.delete(nodeId);
-    memo.set(nodeId, canReachEnd);
     return canReachEnd;
+}
+
+function collectNodesWithMissingTransitions(tree: EditorTree, transMap: Map<string, string>): Set<string> {
+    const nodes = new Set<string>();
+    for (const [nodeId, node] of Object.entries(tree.nodes)) {
+        if ((node.choices ?? []).some((choice) => !transMap.has(`${nodeId}::${choice.id}`))) {
+            nodes.add(nodeId);
+        }
+    }
+    return nodes;
 }
 
 function lintPathsMustReachEnd(tree: EditorTree, reachable: Set<string>, transMap: Map<string, string>): TreeSpecIssue[] {
     const issues: TreeSpecIssue[] = [];
-    const memo = new Map<string, boolean>();
+    const canReachEnd = collectNodesThatCanReachEnd(tree, transMap);
+    const missingTransitions = collectNodesWithMissingTransitions(tree, transMap);
     for (const nodeId of reachable) {
-        if (nodeCanReachEnd(tree, transMap, nodeId, new Set(), memo)) continue;
+        if (canReachEnd.has(nodeId) && !missingTransitions.has(nodeId)) continue;
         issues.push({
             severity: 'error',
             message: `Node '${nodeId}' has paths that do not reach END.`,

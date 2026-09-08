@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 No unreleased changes recorded.
 
+## [0.2.1] - 2026-09-08
+
+### Fixed
+
+- Treat reachable cycles with an exit to `END` as valid terminal paths, matching
+  the shared TreeSpec graph contract and the Adventure Stories consumer.
+
 ## [0.2.0] - 2026-09-08
 
 ### Added
@@ -66,7 +73,9 @@ No unreleased changes recorded.
 - Checks and tests on every PR; Sonar **`scan`** is label-gated on PRs and runs on tag push and manual dispatch (Batch 1).
 - Publish only from manual **`main`** dispatch or **`v*`** tags (not PR labels); publish requires **`checks`**, **`tests`**, and **`scan`**.
 
-[Unreleased]: https://github.com/SignalSafeSoftware/tree-spec-editor-core/compare/v0.1.6...HEAD
+[Unreleased]: https://github.com/SignalSafeSoftware/tree-spec-editor-core/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/SignalSafeSoftware/tree-spec-editor-core/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/SignalSafeSoftware/tree-spec-editor-core/compare/v0.1.6...v0.2.0
 [0.1.6]: https://github.com/SignalSafeSoftware/tree-spec-editor-core/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/SignalSafeSoftware/tree-spec-editor-core/compare/v0.1.4...v0.1.5
 [0.1.3]: https://github.com/SignalSafeSoftware/tree-spec-editor-core/releases/tag/v0.1.3

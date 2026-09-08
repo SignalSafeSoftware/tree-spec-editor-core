@@ -68,4 +68,22 @@ describe('lintEditorTree path analysis', () => {
         expect(issues.filter((issue) => issue.message.includes('paths that do not reach END')).map((issue) => issue.node_id))
             .toEqual(expect.arrayContaining(['start', 'loop']));
     });
+
+    it('accepts a cycle when one branch exits to END', () => {
+        const tree: EditorTree = {
+            start_node: 'start',
+            nodes: {
+                start: promptNode('start', ['continue']),
+                review: promptNode('review', ['reconsider', 'finish']),
+            },
+            transitions: [
+                transition('start', 'continue', 'review', 'start-review'),
+                transition('review', 'reconsider', 'start', 'review-start'),
+                transition('review', 'finish', END_NODE_ID, 'review-end'),
+            ],
+        };
+
+        expect(lintEditorTree(tree).filter((issue) => issue.message.includes('paths that do not reach END')))
+            .toEqual([]);
+    });
 });
