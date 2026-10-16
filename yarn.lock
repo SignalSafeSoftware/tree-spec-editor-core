@@ -344,9 +344,9 @@
   integrity sha512-BfzEnDJOt9T8M989/lA37EcJgat01wLRnoi5dQf3QzOH7jzpqTAzdDbVfRljVr5r+jzKqpbHeyOfAaXxAd0PAA==
 
 "@signalsafe/tree-spec@^0.4.1":
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/@signalsafe/tree-spec/-/tree-spec-0.4.1.tgz#49e3e671f6425b28bd5776d4ce5077ace00e60b2"
-  integrity sha512-abwLzIB4maUk5L4H++oOA8Ikjs4RMFg+4jFJFOs+BQ0qSBiHUtS8zewtTwLwsPymyG0GMcF9N+vZhtAKIyE1kA==
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/@signalsafe/tree-spec/-/tree-spec-0.4.2.tgz#ac6d24bc51f82d19e4750e5be319efab70b81f19"
+  integrity sha512-WwcqgjgNCDsLHOaxsH2cA6UklavidR09AFrpbK45hfhLcwV45VwhSoXB/lx2kD51VRdriRgM1fXjZd1o+WAuAA==
 
 "@types/chai@^5.2.2":
   version "5.2.3"
