@@ -1,10 +1,9 @@
 import type { EditorTree } from '../model.js';
 
 const MISSING = Symbol('tree-merge-missing');
-type MergeValue = unknown;
 type MergePath = readonly (string | number)[];
 type MergeOutcome =
-    | { readonly kind: 'value'; readonly value: MergeValue }
+    | { readonly kind: 'value'; readonly value: unknown }
     | { readonly kind: 'conflicts'; readonly conflicts: readonly TreeMergeConflict[] };
 
 export interface TreeMergeConflict {
@@ -18,24 +17,24 @@ export type TreeMergeResult =
     | { readonly kind: 'merged'; readonly value: EditorTree }
     | { readonly kind: 'conflict'; readonly conflicts: readonly TreeMergeConflict[] };
 
-function isRecord(value: MergeValue): value is Record<string, unknown> {
+function isRecord(value: unknown): value is Record<string, unknown> {
     return value !== MISSING && value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
-function isArray(value: MergeValue): value is readonly unknown[] {
+function isArray(value: unknown): value is readonly unknown[] {
     return Array.isArray(value);
 }
 
-function equalValue(left: MergeValue, right: MergeValue): boolean {
+function equalValue(left: unknown, right: unknown): boolean {
     if (left === MISSING || right === MISSING) return left === right;
     return JSON.stringify(left) === JSON.stringify(right);
 }
 
-function recordValue(record: Record<string, unknown>, key: string): MergeValue {
+function recordValue(record: Record<string, unknown>, key: string): unknown {
     return Object.hasOwn(record, key) ? record[key] : MISSING;
 }
 
-function conflict(path: MergePath, baseline: MergeValue, local: MergeValue, remote: MergeValue): TreeMergeConflict {
+function conflict(path: MergePath, baseline: unknown, local: unknown, remote: unknown): TreeMergeConflict {
     return {
         path,
         baseline: baseline === MISSING ? undefined : baseline,
@@ -130,7 +129,7 @@ function keyedArrayOrder(baselineIds: string[], localIds: string[], remoteIds: s
     return baselineIds;
 }
 
-function mapValue(values: ReadonlyMap<string, unknown>, id: string): MergeValue {
+function mapValue(values: ReadonlyMap<string, unknown>, id: string): unknown {
     return values.has(id) ? values.get(id) : MISSING;
 }
 
@@ -139,9 +138,9 @@ function sameArray(left: readonly string[], right: readonly string[]): boolean {
 }
 
 function mergeValue(
-    baseline: MergeValue,
-    local: MergeValue,
-    remote: MergeValue,
+    baseline: unknown,
+    local: unknown,
+    remote: unknown,
     path: MergePath,
 ): MergeOutcome {
     if (equalValue(local, baseline)) return { kind: 'value', value: cloneValue(remote) };
@@ -179,7 +178,7 @@ function mergeRecordValues(
     return { kind: 'value', value: merged };
 }
 
-function cloneValue(value: MergeValue): MergeValue {
+function cloneValue(value: unknown): unknown {
     return value === MISSING ? MISSING : structuredClone(value);
 }
 
