@@ -1,0 +1,7 @@
+{
+    "name": "@signalsafe/tree-spec-editor-core",
+    "version": "0.2.3",
+    "sha256": "7b419ff11148f09ab234352e02504d19ea5511a541e4e51c79f9a435d5094874",
+    "approvalMatrixSha256": "ec40efa2930cd75832a7f75ad076bcea458f0f2a55933535b538a32296a01baf",
+    "sealedApprovedArchiveSha256": "381046c478608e1773d8dfb947e7e29055ba0af66f30eda006d221a65171228d"
+}

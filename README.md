@@ -140,3 +140,9 @@ See [SECURITY.md](./SECURITY.md). This package manipulates **authoring data in m
 
 - [`@signalsafe/tree-spec`](https://github.com/SignalSafeSoftware/tree-spec) — wire format and graph-editor metadata namespaces.
 - [`@signalsafe/tree-spec-editor-react`](https://github.com/SignalSafeSoftware/tree-spec-editor-react) — React canvas and `useTreeSpecEditor`.
+
+## Release and compatibility
+
+Release `0.2.3` preserves the installed Step 5 editor capabilities and the verified audit fixes. The coordinated dependency floor is TreeSpec `^0.4.4`, editor-core `^0.2.3`, and editor-react `^0.3.3` where declared. React integrations retain React 18 / React Flow 11. See [release preparation](./RELEASING.md) for verification and publication order. The coordinated release was approved on 2026-10-21; registry availability is recorded in release verification receipts.
+
+See the [current release documentation](docs/current-release-candidate.md) for release-specific compatibility and verification boundaries.

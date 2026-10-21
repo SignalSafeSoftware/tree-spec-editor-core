@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 No unreleased changes recorded.
 
+## [0.2.3] - 2026-10-21
+
+### Changed
+
+- Preserve the verified three-way merge conflict and null/deletion handling, strict quality checks and package boundaries; raise the shared TreeSpec floor to `^0.4.4`.
+- Refresh current README, release preparation and package compatibility documentation.
+
 ## [0.2.2] - 2026-10-09
 
 ### Changed
@@ -79,7 +86,7 @@ No unreleased changes recorded.
 - Checks and tests on every PR; Sonar **`scan`** is label-gated on PRs and runs on tag push and manual dispatch (Batch 1).
 - Publish only from manual **`main`** dispatch or **`v*`** tags (not PR labels); publish requires **`checks`**, **`tests`**, and **`scan`**.
 
-[Unreleased]: https://github.com/SignalSafeSoftware/tree-spec-editor-core/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/SignalSafeSoftware/tree-spec-editor-core/compare/v0.2.2...HEAD
 [0.2.1]: https://github.com/SignalSafeSoftware/tree-spec-editor-core/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/SignalSafeSoftware/tree-spec-editor-core/compare/v0.1.6...v0.2.0
 [0.1.6]: https://github.com/SignalSafeSoftware/tree-spec-editor-core/compare/v0.1.5...v0.1.6
