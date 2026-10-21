@@ -1,7 +1,7 @@
 import type { EditorTree } from '../model.js';
 
 const MISSING = Symbol('tree-merge-missing');
-type MergeValue = unknown | typeof MISSING;
+type MergeValue = unknown;
 type MergePath = readonly (string | number)[];
 type MergeOutcome =
     | { readonly kind: 'value'; readonly value: MergeValue }
@@ -32,7 +32,7 @@ function equalValue(left: MergeValue, right: MergeValue): boolean {
 }
 
 function recordValue(record: Record<string, unknown>, key: string): MergeValue {
-    return Object.prototype.hasOwnProperty.call(record, key) ? record[key] : MISSING;
+    return Object.hasOwn(record, key) ? record[key] : MISSING;
 }
 
 function conflict(path: MergePath, baseline: MergeValue, local: MergeValue, remote: MergeValue): TreeMergeConflict {
@@ -48,13 +48,16 @@ function keyedArray(values: readonly unknown[], path: MergePath): Map<string, un
     const result = new Map<string, unknown>();
     for (const value of values) {
         if (!isRecord(value)) return null;
-        const key = path.at(-1) === 'transitions'
-            ? transitionKey(value)
-            : typeof value.id === 'string' ? value.id : null;
+        const key = arrayItemKey(value, path);
         if (key === null || result.has(key)) return null;
         result.set(key, value);
     }
     return result;
+}
+
+function arrayItemKey(value: Record<string, unknown>, path: MergePath): string | null {
+    if (path.at(-1) === 'transitions') return transitionKey(value);
+    return typeof value.id === 'string' ? value.id : null;
 }
 
 function transitionKey(value: Record<string, unknown>): string | null {
@@ -79,13 +82,8 @@ function mergeKeyedArrays(
     const baselineIds = [...baselineMap.keys()];
     const localIds = [...localMap.keys()];
     const remoteIds = [...remoteMap.keys()];
-    const commonIds = baselineIds.filter((id) => localMap.has(id) && remoteMap.has(id));
-    const localCommonIds = localIds.filter((id) => commonIds.includes(id));
-    const remoteCommonIds = remoteIds.filter((id) => commonIds.includes(id));
-    const baselineCommonIds = baselineIds.filter((id) => commonIds.includes(id));
-    const localOrderChanged = !sameArray(localCommonIds, baselineCommonIds);
-    const remoteOrderChanged = !sameArray(remoteCommonIds, baselineCommonIds);
-    if (localOrderChanged && remoteOrderChanged && !sameArray(localCommonIds, remoteCommonIds)) {
+    const order = keyedArrayOrder(baselineIds, localIds, remoteIds);
+    if (order === null) {
         return { kind: 'conflicts', conflicts: [conflict(path, baseline, local, remote)] };
     }
 
@@ -94,9 +92,9 @@ function mergeKeyedArrays(
     const conflicts: TreeMergeConflict[] = [];
     for (const id of ids) {
         const result = mergeValue(
-            baselineMap.has(id) ? baselineMap.get(id) : MISSING,
-            localMap.has(id) ? localMap.get(id) : MISSING,
-            remoteMap.has(id) ? remoteMap.get(id) : MISSING,
+            mapValue(baselineMap, id),
+            mapValue(localMap, id),
+            mapValue(remoteMap, id),
             [...path, id],
         );
         if (result.kind === 'conflicts') conflicts.push(...result.conflicts);
@@ -104,7 +102,6 @@ function mergeKeyedArrays(
     }
     if (conflicts.length > 0) return { kind: 'conflicts', conflicts };
 
-    const order = localOrderChanged ? localIds : remoteOrderChanged ? remoteIds : baselineIds;
     for (const id of ids) if (!order.includes(id)) order.push(id);
     return {
         kind: 'value',
@@ -113,6 +110,28 @@ function mergeKeyedArrays(
             return value === undefined ? [] : [value];
         }),
     };
+}
+
+function keyedArrayOrder(baselineIds: string[], localIds: string[], remoteIds: string[]): string[] | null {
+    const localSet = new Set(localIds);
+    const remoteSet = new Set(remoteIds);
+    const commonIds = new Set(baselineIds.filter((id) => localSet.has(id) && remoteSet.has(id)));
+    const localCommonIds = localIds.filter((id) => commonIds.has(id));
+    const remoteCommonIds = remoteIds.filter((id) => commonIds.has(id));
+    const baselineCommonIds = baselineIds.filter((id) => commonIds.has(id));
+    const localOrderChanged = !sameArray(localCommonIds, baselineCommonIds);
+    const remoteOrderChanged = !sameArray(remoteCommonIds, baselineCommonIds);
+    if (localOrderChanged && remoteOrderChanged && !sameArray(localCommonIds, remoteCommonIds)) {
+        return null;
+    }
+
+    if (localOrderChanged) return localIds;
+    if (remoteOrderChanged) return remoteIds;
+    return baselineIds;
+}
+
+function mapValue(values: ReadonlyMap<string, unknown>, id: string): MergeValue {
+    return values.has(id) ? values.get(id) : MISSING;
 }
 
 function sameArray(left: readonly string[], right: readonly string[]): boolean {
@@ -131,22 +150,7 @@ function mergeValue(
 
     if (isRecord(local) && isRecord(remote)) {
         const baseRecord = isRecord(baseline) ? baseline : {};
-        const merged: Record<string, unknown> = { ...remote };
-        const conflicts: TreeMergeConflict[] = [];
-        for (const key of new Set([...Object.keys(baseRecord), ...Object.keys(local), ...Object.keys(remote)])) {
-            const result = mergeValue(
-                recordValue(baseRecord, key),
-                recordValue(local, key),
-                recordValue(remote, key),
-                [...path, key],
-            );
-            if (result.kind === 'conflicts') conflicts.push(...result.conflicts);
-            else if (result.value === MISSING) delete merged[key];
-            else merged[key] = result.value;
-        }
-        return conflicts.length > 0
-            ? { kind: 'conflicts', conflicts }
-            : { kind: 'value', value: merged };
+        return mergeRecordValues(baseRecord, local, remote, path);
     }
     if (isArray(local) && isArray(remote)) {
         const baseArray = isArray(baseline) ? baseline : [];
@@ -155,6 +159,24 @@ function mergeValue(
         }
     }
     return { kind: 'conflicts', conflicts: [conflict(path, baseline, local, remote)] };
+}
+
+function mergeRecordValues(
+    baseline: Record<string, unknown>,
+    local: Record<string, unknown>,
+    remote: Record<string, unknown>,
+    path: MergePath,
+): MergeOutcome {
+    const merged: Record<string, unknown> = { ...remote };
+    const conflicts: TreeMergeConflict[] = [];
+    for (const key of new Set([...Object.keys(baseline), ...Object.keys(local), ...Object.keys(remote)])) {
+        const result = mergeValue(recordValue(baseline, key), recordValue(local, key), recordValue(remote, key), [...path, key]);
+        if (result.kind === 'conflicts') conflicts.push(...result.conflicts);
+        else if (result.value === MISSING) delete merged[key];
+        else merged[key] = result.value;
+    }
+    if (conflicts.length > 0) return { kind: 'conflicts', conflicts };
+    return { kind: 'value', value: merged };
 }
 
 function cloneValue(value: MergeValue): MergeValue {
