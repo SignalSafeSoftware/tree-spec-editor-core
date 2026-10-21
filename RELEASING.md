@@ -1,4 +1,22 @@
-# Releasing `@signalsafe/tree-spec-editor-core`
+# Releasing @signalsafe/tree-spec-editor-core
+
+## Release 0.2.3
+
+The coordinated release was approved on 2026-10-21. Publish only the reviewed source revision and verified archive after the required checks; this document does not assert registry availability.
+
+The supported editor chain is TreeSpec `^0.4.4` → editor-core `^0.2.3` → editor-react `^0.3.3` → editor `0.4.1`, with the CSS-only theme `0.3.7`. Publish and verify each upstream registry archive before releasing its dependent. React packages retain React/React DOM 18 and React Flow 11; the theme has no runtime JavaScript dependencies.
+
+## Verification
+
+Use the committed lockfile and Node 22.12+; CI checks Node 22 and 24. Before release, run the package scripts declared in `package.json`, inspect `npm pack --dry-run`, and test downstream packages using the exact packed candidate. Record local candidate proof separately from a smoke test that installs published dependencies. A registry smoke test remains pending until its required upstream version is available.
+
+After successful hosted checks at the approved revision, the existing `.github/workflows/ci.yml` publishes on an approved `v*` tag. Manual dispatch runs verification without publishing. Preserve the workflow's checks, tests, scan, smoke, and publish conditions as applicable; inspect their actual results before a release. Verify registry metadata and downloaded archive contents after publication, then update host declarations and locks together and run host integration checks.
+
+## Historical release notes
+
+The following records describe earlier release preparation; their version pins and sequencing are historical.
+
+## Releasing `@signalsafe/tree-spec-editor-core`
 
 Standalone repository: [SignalSafeSoftware/tree-spec-editor-core](https://github.com/SignalSafeSoftware/tree-spec-editor-core).
 
@@ -16,7 +34,7 @@ Standalone repository: [SignalSafeSoftware/tree-spec-editor-core](https://github
 - **Publish runs** when:
   - **Manual:** GitHub Actions → **CI** → **Run workflow** on branch **`main`**, or
   - **Tag:** push a semver tag matching `v*` (for example `vX.Y.Z`).
-- **Publish requires** successful **`checks`**, **`tests`**, and **`scan`** jobs in the same workflow run (see [`.github/workflows/ci.yml`](./.github/workflows/ci.yml)).
+- **Publish requires** successful **`checks`**, **`tests`**, and **`scan`** jobs in the same workflow run (see [`.github/workflows/ci.yml`](https://github.com/SignalSafeSoftware/tree-spec-editor-core/blob/main/.github/workflows/ci.yml)).
 - Pushing a **`v*`** tag starts a workflow run where **`checks`**, **`tests`**, and **`scan`** run before **Publish** can proceed.
 - **GitHub Releases do not trigger publish** in the current workflow.
 - **No npm Environment approval or provenance** in CI today.
