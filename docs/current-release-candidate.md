@@ -1,11 +1,7 @@
-# Current release: @signalsafe/tree-spec-editor-core 0.2.3
+# Release candidate: @signalsafe/tree-spec-editor-core 0.2.4
 
-Status: coordinated release approved on 2026-10-21; registry availability is established by release verification receipts. Existing canonical source and host installations remain unchanged. The candidate combines the installed Step 5 capabilities with the verified package audit fixes; earlier dated state summaries and verification records remain historical evidence.
+The published baseline is 0.2.3. Update normal registry dependencies and frozen locks to the verified TreeSpec 0.4.5 maintenance line while preserving domain-neutral authoring helpers. Existing public exports and runtime behavior remain compatible. The source was reconciled with current remote refactors and additional regression tests while preserving original uncommitted work separately.
 
-The package README describes supported entry points and behavior; `../RELEASING.md` describes the publication gate and order. Use the committed declaration in `../package.json` as the dependency authority. Candidate source, built files, packed archive, and isolated installed consumer must agree. Check actual gate receipts rather than inferring completion from this document.
+The coordinated normal-registry dependency sequence is TreeSpec 0.4.5, editor-core 0.2.4, editor-react 0.3.4, then the deliberately breaking editor-shell 0.5.0 export rename. Theme 0.3.8 is CSS-only and compatible. This package does not add an application domain, storage or provider boundary; hosts retain authorization, persistence and custom field controls.
 
-TreeSpec `0.4.4` precedes editor-core `0.2.3`, editor-react `0.3.3`, editor `0.4.1` and theme `0.3.7`. Before publication, local archive proof verifies this chain without pretending unpublished versions can pass a frozen registry install. Registry lock refresh and published-dependency smoke verification remain staged until the upstream versions exist. React 18 / React Flow 11 support is retained.
-
-## Review record
-
-The canonical repository is preserved. Candidate changes are reviewed as a source delta over the verified remote baseline; frozen registry lock regeneration and final hosted checks remain separately recorded gates. Local passing tests do not establish production cutover or provider readiness.
+Run strict types, full package tests with their existing enforced coverage thresholds and actual packed-consumer checks. React graph documentation images must be regenerated and pass their source fingerprint gate after dependency or metadata changes. Existing hosted checks, Sonar and exact archive/version tags remain release requirements. Candidate metadata alone is not publication or host-adoption evidence.
