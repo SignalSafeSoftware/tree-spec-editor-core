@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-No unreleased changes recorded.
+## [0.2.4] - 2026-11-15
+
+### Changed
+
+- Update normal registry dependencies and frozen locks to the verified TreeSpec 0.4.5 maintenance line while preserving domain-neutral authoring helpers.
+- Preserve current public types, read-only protections, save-failure behavior and stronger upstream quality gates; refresh current compatibility and release documentation.
 
 ## [0.2.3] - 2026-10-21
 
