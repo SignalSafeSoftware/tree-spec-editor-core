@@ -50,7 +50,8 @@ function collectReachableInterNode(tree: EditorTree): Set<string> {
     const stack = [tree.start_node];
 
     while (stack.length > 0) {
-        const id = stack[stack.length - 1];
+        // The loop length guard guarantees a final element.
+        const id = stack.at(-1) as string;
         stack.pop();
         if (reachable.has(id)) continue;
         reachable.add(id);
