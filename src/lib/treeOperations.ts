@@ -69,26 +69,18 @@ function countSharedNodeContentChanges(
     return { typeOrPromptChanges, choiceChanges };
 }
 
-function buildTemplateSlotIds(spec: TreeTemplateSpec): Record<string, string> {
-    const slotToId: Record<string, string> = {};
-    for (const slot of Object.keys(spec.nodes)) {
-        slotToId[slot] = newEditorNodeId();
-    }
-    return slotToId;
-}
-
 function buildNodesFromTemplate(
     tree: EditorTree,
     spec: TreeTemplateSpec,
-    slotToId: Record<string, string>,
     base: { x: number; y: number },
-): Record<string, EditorNode> {
+): { nodes: Record<string, EditorNode>; slotToId: Map<string, string>; focusNodeId: string } {
     const nodes: Record<string, EditorNode> = { ...tree.nodes };
+    const slotToId = new Map<string, string>();
+    let focusNodeId = '';
     for (const [slot, nodeSpec] of Object.entries(spec.nodes)) {
-        const id = slotToId[slot];
-        if (!id) {
-            throw new Error(`Missing slot mapping for "${slot}"`);
-        }
+        const id = newEditorNodeId();
+        slotToId.set(slot, id);
+        if (slot === spec.focusSlot) focusNodeId = id;
         const offset = nodeSpec.offset ?? { x: 0, y: 0 };
         nodes[id] = {
             id,
@@ -98,42 +90,35 @@ function buildNodesFromTemplate(
             position: { x: base.x + offset.x, y: base.y + offset.y },
         };
     }
-    return nodes;
+    return { nodes, slotToId, focusNodeId };
 }
 
 function resolveTemplateTransitionEndpoints(
-    spec: TreeTemplateSpec,
     tr: TreeTemplateTransitionSpec,
-    slotToId: Record<string, string>,
+    slotToId: ReadonlyMap<string, string>,
 ): { fromNodeId: string; toNodeId: string } {
-    if (!spec.nodes[tr.fromSlot]) {
+    const fromNodeId = slotToId.get(tr.fromSlot);
+    if (fromNodeId === undefined) {
         throw new Error(`Unknown fromSlot "${tr.fromSlot}" in template transition`);
-    }
-    if (tr.toSlot !== END_NODE_ID && !spec.nodes[tr.toSlot]) {
-        throw new Error(`unknown slot "${tr.toSlot}" in template transition`);
-    }
-    const fromNodeId = slotToId[tr.fromSlot];
-    if (!fromNodeId) {
-        throw new Error(`Missing slot mapping for "${tr.fromSlot}"`);
     }
     if (tr.toSlot === END_NODE_ID) {
         return { fromNodeId, toNodeId: END_NODE_ID };
     }
-    const toNodeId = slotToId[tr.toSlot];
-    if (!toNodeId) {
-        throw new Error(`Missing slot mapping for "${tr.toSlot}"`);
+    const toNodeId = slotToId.get(tr.toSlot);
+    if (toNodeId === undefined) {
+        throw new Error(`unknown slot "${tr.toSlot}" in template transition`);
     }
     return { fromNodeId, toNodeId };
 }
 
 function appendTemplateTransitions(
     spec: TreeTemplateSpec,
-    slotToId: Record<string, string>,
+    slotToId: ReadonlyMap<string, string>,
     transitions: EditorTransition[],
 ): EditorTransition[] {
     const next = [...transitions];
     for (const tr of spec.transitions) {
-        const { fromNodeId, toNodeId } = resolveTemplateTransitionEndpoints(spec, tr, slotToId);
+        const { fromNodeId, toNodeId } = resolveTemplateTransitionEndpoints(tr, slotToId);
         next.push({
             id: safeUUID(),
             fromNodeId,
@@ -234,19 +219,14 @@ export function applyTreeTemplate(
     spec: TreeTemplateSpec,
     options?: ApplyTreeTemplateOptions,
 ): { nextTree: EditorTree; focusNodeId: string } {
-    if (!spec.nodes[spec.focusSlot]) {
+    if (!Object.hasOwn(spec.nodes, spec.focusSlot)) {
         throw new Error(`focusSlot "${spec.focusSlot}" is not defined in spec.nodes`);
     }
 
-    const slotToId = buildTemplateSlotIds(spec);
     const base = options?.basePosition ?? { x: 0, y: getNextSpawnPosition(tree).y };
-    const nodes = buildNodesFromTemplate(tree, spec, slotToId, base);
+    const { nodes, slotToId, focusNodeId } = buildNodesFromTemplate(tree, spec, base);
     const transitions = appendTemplateTransitions(spec, slotToId, tree.transitions);
 
-    const focusNodeId = slotToId[spec.focusSlot];
-    if (!focusNodeId) {
-        throw new Error(`Missing slot mapping for focusSlot "${spec.focusSlot}"`);
-    }
     const start_node = tree.start_node || focusNodeId;
 
     return {
