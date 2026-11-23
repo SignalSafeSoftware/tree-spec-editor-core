@@ -5,7 +5,6 @@ import {
     type TreeSpecIssue,
 } from '@signalsafe/tree-spec';
 
-import { getChoiceEdgeHints } from './choiceEdgeHints.js';
 import { RENDER_HINTS_EDITOR_NS } from './nodeHints.js';
 import type { EditorNode, EditorTree } from '../model.js';
 
@@ -17,9 +16,6 @@ function formatUnknownValue(value: unknown): string {
     }
     if (typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint') {
         return `${value}`;
-    }
-    if (value == null) {
-        return '';
     }
     try {
         return JSON.stringify(value) ?? '';
@@ -129,14 +125,15 @@ function lintEditorBucket(issues: TreeSpecIssue[], node: EditorNode, editor: Rec
 
 function lintNodeAppearance(issues: TreeSpecIssue[], node: EditorNode): void {
     const hints = node.render_hints;
-    if (!isRecord(hints)) return;
-    const editor = hints[RENDER_HINTS_EDITOR_NS];
+    const editor = isRecord(hints) ? hints[RENDER_HINTS_EDITOR_NS] : undefined;
     if (isRecord(editor)) {
         lintEditorBucket(issues, node, editor);
     }
 
     for (const choice of node.choices ?? []) {
-        const choiceHints = getChoiceEdgeHints(choice);
+        const hints = choice.render_hints;
+        const bucket = isRecord(hints) ? hints[RENDER_HINTS_EDITOR_NS] : undefined;
+        const choiceHints = isRecord(bucket) ? bucket : {};
         lintColorField(
             issues,
             node.id,
