@@ -50,8 +50,9 @@ function collectReachableInterNode(tree: EditorTree): Set<string> {
     const stack = [tree.start_node];
 
     while (stack.length > 0) {
-        const id = stack.pop();
-        if (!id || reachable.has(id) || !tree.nodes[id]) continue;
+        const id = stack[stack.length - 1];
+        stack.pop();
+        if (reachable.has(id)) continue;
         reachable.add(id);
         enqueueReachableTransitionTargets(tree, id, reachable, stack);
     }
@@ -112,11 +113,12 @@ function nudgeCollisionPair(aNode: EditorNode, bNode: EditorNode): boolean {
     }
 
     const moveNode = chooseCollisionMoveNode(aNode, bNode);
-    if (isNodeLocked(moveNode) || !moveNode.position) return false;
+    if (isNodeLocked(moveNode)) return false;
+    const position = moveNode === aNode ? aNode.position : bNode.position;
 
     moveNode.position = snapPosition({
-        x: moveNode.position.x,
-        y: moveNode.position.y + DEFAULT_NODE_LAYOUT_HEIGHT + COLLISION_MIN_GAP,
+        x: position.x,
+        y: position.y + DEFAULT_NODE_LAYOUT_HEIGHT + COLLISION_MIN_GAP,
     });
     return true;
 }
@@ -128,7 +130,6 @@ function nudgeNodePairCollisions(
 ): boolean {
     const aNode = nodes[aId];
     const bNode = nodes[bId];
-    if (!aNode || !bNode) return false;
     return nudgeCollisionPair(aNode, bNode);
 }
 
@@ -162,7 +163,6 @@ function addDagreTransitionEdge(
     graph: dagre.graphlib.Graph,
     transition: EditorTree['transitions'][number],
     reachable: Set<string>,
-    includeEndSink: boolean,
     edgePairs: Set<string>,
 ): void {
     const from = transition.fromNodeId;
@@ -170,7 +170,6 @@ function addDagreTransitionEdge(
     if (!from || !to || !reachable.has(from)) return;
 
     if (to === END_NODE_ID) {
-        if (!includeEndSink) return;
         const pair = `${from}->${END_NODE_ID}`;
         if (edgePairs.has(pair)) return;
         edgePairs.add(pair);
@@ -204,7 +203,7 @@ function layoutWithDagre(
 
     const edgePairs = new Set<string>();
     for (const transition of tree.transitions) {
-        addDagreTransitionEdge(g, transition, reachable, includeEndSink, edgePairs);
+        addDagreTransitionEdge(g, transition, reachable, edgePairs);
     }
 
     dagre.layout(g);
@@ -212,7 +211,6 @@ function layoutWithDagre(
     const positions = new Map<string, { x: number; y: number }>();
     for (const id of g.nodes()) {
         const layoutNode = g.node(id);
-        if (!layoutNode) continue;
         const width = id === END_NODE_ID ? END_LAYOUT_WIDTH : DEFAULT_GRAPH_NODE_WIDTH;
         const height = id === END_NODE_ID ? 80 : DEFAULT_NODE_LAYOUT_HEIGHT;
         positions.set(
@@ -248,7 +246,7 @@ export function autoLayoutTree(tree: EditorTree): EditorTree {
     for (const [id, position] of dagrePositions.entries()) {
         if (id === END_NODE_ID) continue;
         const node = nextNodes[id];
-        if (!node || isNodeLocked(node)) continue;
+        if (isNodeLocked(node)) continue;
         node.position = position;
         maxX = Math.max(maxX, position.x);
     }
@@ -260,7 +258,7 @@ export function autoLayoutTree(tree: EditorTree): EditorTree {
     const orphanX = snapToGrid(maxX + UNREACHABLE_COLUMN_OFFSET);
     unreachableIds.forEach((id, index) => {
         const node = nextNodes[id];
-        if (!node || isNodeLocked(node)) return;
+        if (isNodeLocked(node)) return;
         node.position = snapPosition({ x: orphanX, y: 40 + index * 180 });
     });
 
