@@ -24,6 +24,10 @@ function formatUnknownValue(value: unknown): string {
     }
 }
 
+function formatEdgeType(value: unknown): string {
+    return typeof value === 'object' && value !== null ? formatUnknownValue(value) : String(value);
+}
+
 function isValidHexColor(value: string): boolean {
     return HEX_COLOR_RE.test(value);
 }
@@ -152,7 +156,7 @@ function lintNodeAppearance(issues: TreeSpecIssue[], node: EditorNode): void {
         ) {
             issues.push({
                 severity: 'warning',
-                message: `Choice edge type must be default, straight, smoothstep, or step (got ${String(edgeType)}).`,
+                message: `Choice edge type must be default, straight, smoothstep, or step (got ${formatEdgeType(edgeType)}).`,
                 node_id: node.id,
                 choice_id: choice.id,
             });
