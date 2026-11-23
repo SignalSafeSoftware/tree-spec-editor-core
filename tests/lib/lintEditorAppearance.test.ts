@@ -1,5 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
-import * as choiceEdgeHints from '../../src/lib/choiceEdgeHints';
+import { describe, expect, it } from 'vitest';
 import { lintEditorAppearance } from '../../src/lib/lintEditorAppearance';
 import type { EditorTree } from '../../src/model';
 
@@ -174,10 +173,6 @@ describe('lintEditorAppearance', () => {
     });
 
     it('warns on invalid choice edgeType', () => {
-        vi.spyOn(choiceEdgeHints, 'getChoiceEdgeHints').mockReturnValue({
-            edgeType: 'bezier' as never,
-        });
-
         const tree = sampleTree({
             nodes: {
                 start: {
@@ -185,14 +180,13 @@ describe('lintEditorAppearance', () => {
                     type: 'prompt',
                     prompt: 'Hello',
                     render_hints: {},
-                    choices: [{ id: 'c1', label: 'Go' }],
+                    choices: [{ id: 'c1', label: 'Go', render_hints: { editor: { edgeType: 'bezier' } } }],
                 },
             },
         });
 
         const issues = lintEditorAppearance(tree);
         expect(issues.some((issue) => issue.choice_id === 'c1' && issue.message.includes('edge type'))).toBe(true);
-        vi.restoreAllMocks();
     });
 
     it('warns on invalid default_edge_type in graph editor meta', () => {

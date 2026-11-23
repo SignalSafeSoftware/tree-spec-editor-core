@@ -15,7 +15,7 @@ export function moveNodeChoice(
     if (swapWith < 0 || swapWith >= list.length) return null;
     const current = list[index];
     const target = list[swapWith];
-    if (current === undefined || target === undefined) return null;
+    if (target === undefined) return null;
     list[index] = target;
     list[swapWith] = current;
     return list;
@@ -29,7 +29,6 @@ function reorderChoicesAtIndex(
     const next = [...choices];
     const removed = next.splice(fromIndex, 1);
     const item = removed[0];
-    if (item === undefined) return next;
     const insertAt = toIndex > fromIndex ? toIndex - 1 : toIndex;
     next.splice(insertAt, 0, item);
     return next;
@@ -70,7 +69,6 @@ export function moveChoiceInTree(
     }
 
     const [movedChoice] = fromChoices.splice(fromIndex, 1);
-    if (!movedChoice) return null;
 
     const toChoices = [...(toNode.choices ?? [])];
     const insertIndex = Math.max(0, Math.min(toIndex, toChoices.length));

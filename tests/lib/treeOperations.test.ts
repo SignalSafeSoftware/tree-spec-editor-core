@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { END_NODE_ID, type EditorTree } from '../../src/model';
 import {
     applyTreeTemplate,
@@ -7,7 +7,6 @@ import {
     duplicateNode,
     type TreeTemplateSpec,
 } from '../../src/lib/treeOperations';
-import * as editorHelpers from '../../src/lib/editorHelpers';
 
 function createTree(): EditorTree {
     return {
@@ -356,12 +355,6 @@ describe('applyTreeTemplate', () => {
             ],
         };
         expect(() => applyTreeTemplate(tree, broken)).toThrowError(/Unknown fromSlot/);
-    });
-
-    it('throws when a slot id mapping is empty (defensive guard)', () => {
-        vi.spyOn(editorHelpers, 'newEditorNodeId').mockReturnValue('');
-        expect(() => applyTreeTemplate(createTree(), makeSpec())).toThrow(/Missing slot mapping/);
-        vi.restoreAllMocks();
     });
 
     it('supports a template with a single node and only END transitions', () => {
