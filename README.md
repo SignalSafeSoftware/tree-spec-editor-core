@@ -1,5 +1,10 @@
 # @signalsafe/tree-spec-editor-core
 
+[![Build](https://github.com/SignalSafeSoftware/tree-spec-editor-core/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/SignalSafeSoftware/tree-spec-editor-core/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/@signalsafe/tree-spec-editor-core?logo=npm)](https://www.npmjs.com/package/@signalsafe/tree-spec-editor-core)
+[![npm downloads per month](https://img.shields.io/npm/dm/@signalsafe/tree-spec-editor-core?label=downloads%2Fmonth)](https://www.npmjs.com/package/@signalsafe/tree-spec-editor-core)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](https://github.com/SignalSafeSoftware/tree-spec-editor-core/blob/main/LICENSE)
+
 Framework-agnostic core for the SignalSafe **TreeSpec graph editor**: editor model types, pure tree operations, layout, validation, and keyboard/autosave helpers.
 
 | | |
