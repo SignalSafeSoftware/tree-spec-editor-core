@@ -156,6 +156,9 @@ jobs:
               run: yarn smoke:package
 
     publish:
+        permissions:
+          contents: read
+          id-token: write
         name: Publish
         needs: [checks, tests, scan, smoke-package]
         if: |
@@ -171,6 +174,8 @@ jobs:
               with:
                   node-version: ${{ env.PUBLISH_NODE_VERSION }}
 
+            - name: Install npm with trusted publishing support
+              run: npm install --global npm@11.21.2 --ignore-scripts
             - name: Enable Yarn
               run: corepack enable
 
@@ -202,19 +207,5 @@ jobs:
                   assert.equal(createHash('sha256').update(readFileSync(packed.filename)).digest('hex'), expected.sha256);
                   appendFileSync(process.env.GITHUB_OUTPUT, `archive=${packed.filename}\n`);
                   NODE
-            - name: Configure npm auth
-              run: |
-                echo "registry=https://registry.npmjs.org/" > ~/.npmrc
-                echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" >> ~/.npmrc
-              env:
-                NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-            - name: Verify npm publisher account
-              run: npm whoami
-              env:
-                NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
             - name: Publish to npm
               run: npm publish "${{ steps.artifact.outputs.archive }}" --access public --ignore-scripts
-              env:
-                NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

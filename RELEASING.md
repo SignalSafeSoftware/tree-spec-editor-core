@@ -1,5 +1,28 @@
 # Releasing @signalsafe/tree-spec-editor-core
 
+## Current npm publishing: GitHub Actions OIDC
+
+The npm package `@signalsafe/tree-spec-editor-core` uses trusted publishing from
+`SignalSafeSoftware/tree-spec-editor-core`, workflow `ci.yml`. The connection permits
+`npm publish` and staged publishing; separate dist-tag management is not granted.
+Publishing jobs use GitHub-hosted runners, Node 24, npm 11.21.2 and scoped
+`id-token: write` permission. Reusable workflow callers also grant this permission.
+No `NPM_TOKEN` publishing secret or `npm whoami` precheck is required.
+
+For this migration, release `0.2.5` with immutable tag `v0.2.5`
+after the migration PR and all required checks pass. Publish only through the
+workflow after merging the reviewed commit; do not move an existing release tag.
+Existing quality gates, package smoke checks and approved-archive checks remain
+required wherever configured. Python releases and dependency-install credentials
+are independent of this npm authentication change.
+
+Verify the GitHub publish job succeeds, npm serves the expected version/archive,
+and the package's trusted publisher status becomes validated. A newly saved
+connection must publish within npm's two-day validation window. Retain existing
+token access until OIDC publishing is verified; disabling token publishing and
+removing unused secrets is a separate follow-up. Never log credentials or OIDC tokens.
+
+
 ## Release 0.2.4
 
 The coordinated release was approved on 2026-10-21. Publish only the reviewed source revision and verified archive after the required checks; this document does not assert registry availability.
@@ -43,9 +66,9 @@ Standalone repository: [SignalSafeSoftware/tree-spec-editor-core](https://github
 
 - Local development and CI use **Yarn** for `install`, `test`, `build`, and `smoke:package`.
 - CI **publish** uses **`npm publish`** (non-interactive; compatible with 2FA-enabled npm accounts when auth is configured correctly).
-- Set the GitHub Actions secret **`NPM_TOKEN`** to a publish-capable npm token unless **npm trusted publishing/OIDC** is configured for the repository.
-- If the npm account or package requires **2FA for publish**, the token must support non-interactive publishing — for example a granular access token with read/write package access and **2FA bypass enabled for write actions**, or npm trusted publishing/OIDC.
-- CI writes auth to `~/.npmrc` only; no `.npmrc` is committed to the repository.
+Publishing uses the trusted GitHub Actions workflow described above.
+- GitHub Actions obtains short-lived publishing credentials through OIDC; npm account 2FA remains enabled.
+- No permanent publishing token is written to `~/.npmrc` by the release workflow.
 - CI does not run `npm version` or bump versions during publish; the committed `package.json` version is published as-is.
 
 ## Before you release
@@ -81,7 +104,7 @@ Standalone repository: [SignalSafeSoftware/tree-spec-editor-core](https://github
    git push origin vX.Y.Z
    ```
 
-   **Option B — Manual dispatch:** merge release commits to **`main`**, then GitHub → **Actions** → **CI** → **Run workflow** (branch **`main`**). Ensure `package.json` `version` matches the release you intend to ship.
+   Manual dispatch verifies the branch without publishing; use the immutable version tag to publish.
 
 ## After publish
 
@@ -89,4 +112,4 @@ Standalone repository: [SignalSafeSoftware/tree-spec-editor-core](https://github
 npm view @signalsafe/tree-spec-editor-core version
 ```
 
-CI runs `yarn smoke:package`, logs the package version, then publishes with `npm publish` using `NPM_TOKEN` auth.
+CI runs `yarn smoke:package`, logs the package version, then publishes with `npm publish` using GitHub Actions OIDC authentication.
