@@ -187,9 +187,9 @@
   integrity sha512-2j9bGt5Jh8hj+vPtgzPtl72j0yRxHAyumoo6TNfAjsLB04UtpSvPbPcDcBMxz7n+9CYB0c1GxQFxYRg2jimqGw==
 
 "@signalsafe/tree-spec@^0.4.5":
-  version "0.4.5"
-  resolved "https://registry.yarnpkg.com/@signalsafe/tree-spec/-/tree-spec-0.4.5.tgz#3c72bdaf18919b97c379dfe46d891b416c6cc4e2"
-  integrity sha512-oTMw+iPDAs9a/FUsDHDHSA6A+zK3vbI8e7K4ygJFziozU+c0vJjonpd2Tce94wXPPs76ukozp7NZijMIOw6hYQ==
+  version "0.4.6"
+  resolved "https://registry.yarnpkg.com/@signalsafe/tree-spec/-/tree-spec-0.4.6.tgz#5d6271896537efe6ca2e702744931ef643c3f21e"
+  integrity sha512-yPRoV+BOAU7ik3f4e2JsrISsuMV5rUav9p+pGPlNcUoS7IXSNUZCqQWJ6IFEADOD2BXL4DqveVLIhCqxFWiZ3g==
 
 "@tybys/wasm-util@^0.10.3":
   version "0.10.4"
